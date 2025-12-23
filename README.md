@@ -1,23 +1,23 @@
-<img src="thumbnail.png" alt="kanade thumb" width="800px" style="border-radius: 10px; margin: 10px;">
+<img src="thumbnail.png" alt="Myoraei thumb" style="border-radius: 10px; margin: 10px;">
 
-# Kanade
+# Myoraei
 
-🚧 **Work in Progress**, the files are not pushed yet.
+🚧 **Work in Progress**, in very early stage right now; everything is prone to change.
 
-_The **one and only** proper music player, with all the functions you need._
+_The **one and only** proper music player, with all the features you need._
 
 <div align="center">
 
-[📖 Documentation](#) • [💡 Request Feature](https://github.com/tanosshi/kanade/issues)
+[📖 Documentation](#) • [💡 Request Feature](https://github.com/tanosshi/Myoraei/issues)
 
 </div>
 
-## How Kanade Stands Out from Other Music Players
+## How Myoraei will stand out from others
 
 - Everything is customizable, from every aspect of the app including the app logo. If you do not want something, toggle it off.
 - Run fully offline, hybrid synced or fully online. It all depends on your likings.
 - Offline music recommendation, based off of your listening habits.
-- yt-dlp fully integrated, always with fallback support.
+- yt-dlp fully integrated, with fallback support.
 - Last.fm integration, your stats are always yours.
 - Locally track listening habits, only for you, fully private.
 - Automatically fetch album covers and lyrics if toggled.
@@ -26,7 +26,7 @@ _The **one and only** proper music player, with all the functions you need._
 - Plenty of pre-made themes.
 - All user ideas are valued to me.
 
-## How Other Music Players Compare
+## How other players compare
 
 - Most players are built in Kotlin, while we run in Expo.js. Performance may vary.
 - Battery usage might be slightly higher than the average music player.
@@ -42,18 +42,20 @@ _The **one and only** proper music player, with all the functions you need._
 | Database                         | ✅ **Complete**                |
 | Folder scanner                   | ✅ **Complete**                |
 | Metadata reader                  | ✅ **Complete**                |
-| Miniplayer                       | 🟡 **Half Complete, halted**   |
-| Proper Landscape UI              | 🔄 **Planned**                 |
-| Sync colors based on album cover | 🔄 **Planned**                 |
-| Wallpaper accent color           | 🔄 **Planned**                 |
-| Better Headset support           | 🔄 **Planned**                 |
-| Gapless playback                 | 🔄 **Planned**                 |
-| Music notification               | 🔄 **Planned**                 |
+| Playlist builder                 | 🟡 **Almost Complete, halted** |
+| Miniplayer                       | 🟡 **Almost Complete**         |
 | Sleep timer                      | 🔄 **Planned**                 |
+| Music visualizer                 | 🔄 **Planned**                 |
+| Fix unloader on new tab          | 🔄 **Planned**                 |
+| Font changer                     | 🔄 **Planned**                 |
+| Animated icons in bottom nav bar | 🔄 **Planned**                 |
+| Wallpaper accent color           | 🔄 **Planned**                 |
+| Sync colors based on album cover | 🔄 **Planned**                 |
 | Lyrics screen, Load lyrics       | 🔄 **Planned**                 |
-| Edit tag/ID3 in app              | 🔄 **Planned**                 |
-| Playlist builder                 | 🔄 **Planned**                 |
-| Settings                         | 🔴 **Finish everything first** |
+| Music notification               | 🟡🔴 **Almost Complete**       |
+| Edit tag/ID3 in app              | 🔴 **Finish everything first** |
+| Proper Landscape UI              | 🔴 **Finish everything first** |
+| Settings (🟡 UI)                 | 🔴 **Finish everything first** |
 
 > All core/base features will be removed from the roadmap once most of them are complete, only special features will remain.
 
@@ -61,32 +63,64 @@ _The **one and only** proper music player, with all the functions you need._
 
 ## 🎯 (Future) Feature Roadmap
 
-> These features will be made once the core features are complete.
+> Future roadmap features will be made once the core features are complete.
 
 <div align="center">
 
-| Feature                                             | Importance       |
-| --------------------------------------------------- | ---------------- |
-| Auto fetch covers and lyrics                        | 🔴 **Important** |
-| Make every part easily customizable (theme.ts)      | 🔴 **Important** |
-| Download music. MP3 with yt-dlp, FLAC considerable. | 🔴 **Important** |
-| Custom logo and app name                            | 🟡 **High**      |
-| Music recommendations, offline version after        | 🟡 **High**      |
-| Tiktok-like scroll feed for offline music recs      | 🟡 **High**      |
-| Navigation bar on top (Take auxio as reference)     | 🟢 **Low**       |
-| Integration with Last.fm                            | 🟢 **Low**       |
-| View local most played artist/track                 | 🟢 **Low**       |
-| Sync data, songs and playlists                      | 🟢 **Low**       |
-| Automatic sleep timer                               | 🟢 **Low**       |
-| Listening stats page (on Discover maybe?)           | 🟢 **Low**       |
-| Copy music link; even when offline.                 | 🟢 **Low**       |
-| Squiggly line in notification (if possible)         | 🟢 **Low**       |
-| Show last.fm stats in For You                       | 🟢 **Low**       |
-| Skip Andr. audio processing, directly output to DAC | ⁉ **Scrap?**     |
+| Feature                                             | Importance                        |
+| --------------------------------------------------- | --------------------------------- |
+| Auto fetch metadata; (artist+) covers, lyrics etc.  | 🔴 **Important**                  |
+| Make every part easily customizable (theme.ts)      | 🔴 **Important**                  |
+| Download music. MP3 with yt-dlp, FLAC considerable. | 🔴 **Important**                  |
+| Tag cloud feature                                   | 🔴 **Finish auto fetch first**    |
+| Custom logo and app name                            | 🟡 **High**                       |
+| Music recommendations, offline version after        | 🟡 **High**                       |
+| Tiktok-like scroll feed for offline music recs      | 🟡 **High**                       |
+| Navigation bar on top (Take auxio as reference)     | 🟢 **Low**                        |
+| Integration with Last.fm                            | 🟢 **Low**                        |
+| View local most played artist/track                 | 🟢 **Low**                        |
+| Sync data, songs and playlists                      | 🟢 **Low**                        |
+| Automatic music recommender (Bored detector)        | 🟢 **Low**                        |
+| Automatic sleep timer                               | 🟢 **Low**                        |
+| Floating lyrics                                     | 🟢 **Low**                        |
+| Listening stats page (on Discover maybe?)           | 🟢 **Low**                        |
+| Copy music link; even when offline.                 | 🟢 **Low**                        |
+| Squiggly line in notification (if possible)         | 🟢 **Low**                        |
+| Show last.fm stats in For You                       | 🟢 **Low**                        |
+| Gapless playback                                    | 🟢 **Low**                        |
+| Discord Rich Presence (Battery consuming)           | 🟢 **Low** ⁉ **Success-rate low** |
+| Airbuds support (Extremely challenging)             | ⁉ **Scrap?**                      |
+| In-app equalizer                                    | ⁉ **Scrap?**                      |
+| Modify animation curves per element (Advanced)      | ⁉ **Scrap?**                      |
+| Widgets                                             | ⁉ **Scrap?**                      |
+| Skip Andr. audio processing, directly output to DAC | ⁉ **Scrap?**                      |
 
-> Just because it is low importance doesn't mean it won't be made. Other things will be prioritized first.
+#### '⁉' indicates that i'll think about it after core functions are done.
+
+> It is most likely that Myoraei will weigh more than 1GB after install with all the features implemented, enabled and **cached** in app.
+
+## </div>
+
+## 🎯 (Future) Theme Roadmap
+
+<div align="center">
+
+| Feature               | Importance       |
+| --------------------- | ---------------- |
+| AMOLED dark mode      | 🔴 **Max**       |
+| White mode            | 🔴 **Important** |
+| Regular dark mode     | 🟡 **High**      |
+| Playful pink          | 🟡 **High**      |
+| AMOLED red            | 🟡 **High**      |
+| Sharp dark mode       | 🟡 **High**      |
+| Spotify replica       | 🟢 **Last**      |
+| YouTube Music replica | 🟢 **Last**      |
+
+> These are presets, user's can make their own or customize existing ones.
 
 </div>
+
+---
 
 <div align="center">
 
@@ -101,7 +135,7 @@ Inspired by [auxio](https://github.com/OxygenCobalt/Auxio) and [Metro](https://g
 
 ## 🗂️ License
 
-Kanade is released under the GNU General Public License v3.0
-(GPLv3), which can be found [here](LICENSE.md)
+Myoraei is released under the GNU General Public License v3.0
+(GPLv3), which can be found [here](LICENSE)
 
-> I am not associated with anything you do in this app. Any complaints? Please create an issue.
+> I am not associated with anything you do in this app.

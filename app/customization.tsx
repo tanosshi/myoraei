@@ -1,0 +1,501 @@
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
+// @ts-ignore
+import { useRouter } from "expo-router";
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../constants/theme";
+import {
+  CUSTOMIZATION_CONFIG,
+  CATEGORY_ICON_MAP,
+} from "../constants/customization";
+
+export default function CustomizationScreen() {
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
+    null
+  );
+  const [viewMode, setViewMode] = React.useState<"grid" | "rows">("grid");
+
+  const [settingsState, setSettingsState] = React.useState<
+    Record<string, boolean>
+  >(() => {
+    const initialState: Record<string, boolean> = {};
+    Object.values(CUSTOMIZATION_CONFIG).forEach((section) => {
+      section.settings.forEach((setting) => {
+        if (setting.type === "toggle" && setting.defaultValue !== null) {
+          initialState[setting.codename] = setting.defaultValue as boolean;
+        }
+      });
+    });
+    return initialState;
+  });
+
+  const handleSettingPress = (codename: string, type: string) => {
+    console.log(`Customization setting pressed: ${codename} (type: ${type})`);
+    //
+  };
+
+  const handleToggleChange = (codename: string, value: boolean) => {
+    console.log(`Customization toggle changed: ${codename} = ${value}`);
+    setSettingsState((prev) => ({
+      ...prev,
+      [codename]: value,
+    }));
+  };
+
+  const renderCategoryBlock = (
+    sectionKey: string,
+    section: any,
+    index: number,
+    total: number
+  ) => {
+    const isRowMode = viewMode === "rows";
+    const isFirst = index === 0;
+    const isLast = index === total - 1;
+
+    const getRowBlockStyle = () => {
+      if (!isRowMode) return styles.categoryBlock;
+
+      if (isFirst && isLast) {
+        return styles.categoryBlockRow;
+      } else if (isFirst) {
+        return styles.categoryBlockRowFirst;
+      } else if (isLast) {
+        return styles.categoryBlockRowLast;
+      } else {
+        return styles.categoryBlockRowMiddle;
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        key={sectionKey}
+        style={[
+          getRowBlockStyle(),
+          selectedCategory === sectionKey &&
+            (isRowMode
+              ? styles.categoryBlockRowSelected
+              : styles.categoryBlockSelected),
+        ]}
+        onPress={() =>
+          setSelectedCategory(
+            selectedCategory === sectionKey ? null : sectionKey
+          )
+        }
+      >
+        <View style={isRowMode ? styles.categoryIconRow : styles.categoryIcon}>
+          <MaterialIcons
+            name={CATEGORY_ICON_MAP[sectionKey] || "category"}
+            size={isRowMode ? 24 : 32}
+            color={
+              selectedCategory === sectionKey
+                ? COLORS.primary
+                : COLORS.onSurfaceVariant
+            }
+          />
+        </View>
+        <Text
+          style={[
+            isRowMode ? styles.categoryTitleRow : styles.categoryTitle,
+            selectedCategory === sectionKey &&
+              (isRowMode
+                ? styles.categoryTitleRowSelected
+                : styles.categoryTitleSelected),
+          ]}
+        >
+          {section.title}
+        </Text>
+        {!isRowMode && (
+          <Text style={styles.categoryCount}>
+            {section.settings.length} settings
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const renderSettingItem = (
+    setting: any,
+    sectionKey: string,
+    index: number,
+    isLast: boolean
+  ) => {
+    const { codename, name, description, emoji, type } = setting;
+
+    const isToggle = type === "toggle";
+    const hasRightArrow = type === "menu" || type === "action";
+
+    const isClickable = type === "menu" || type === "action";
+
+    const ItemComponent = isClickable ? TouchableOpacity : View;
+    const itemProps = isClickable
+      ? { onPress: () => handleSettingPress(codename, type) }
+      : {};
+
+    return (
+      <React.Fragment key={codename}>
+        <ItemComponent style={styles.settingItem} {...itemProps}>
+          <View style={styles.settingIcon}>
+            <MaterialIcons name={emoji} size={24} color={COLORS.primary} />
+          </View>
+          <View style={styles.settingContent}>
+            <Text style={styles.settingLabel}>{name}</Text>
+            {description && (
+              <Text style={styles.settingDescription}>{description}</Text>
+            )}
+          </View>
+          {isToggle && (
+            <Switch
+              value={settingsState[codename] || false}
+              onValueChange={(value) => handleToggleChange(codename, value)}
+              trackColor={{
+                false: COLORS.surfaceVariant,
+                true: COLORS.primaryContainer,
+              }}
+              thumbColor={
+                settingsState[codename] ? COLORS.primary : COLORS.outline
+              }
+            />
+          )}
+          {hasRightArrow && (
+            <MaterialIcons
+              name="chevron-right"
+              size={24}
+              color={COLORS.onSurfaceVariant}
+            />
+          )}
+        </ItemComponent>
+        {!isLast && <View style={styles.divider} />}
+      </React.Fragment>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push("/settings")}
+        >
+          <MaterialIcons name="arrow-back" size={24} color={COLORS.onSurface} />
+        </TouchableOpacity>
+        <Text style={styles.title}>Customize</Text>
+        <TouchableOpacity
+          style={styles.viewModeButton}
+          onPress={() => setViewMode(viewMode === "grid" ? "rows" : "grid")}
+        >
+          <Feather
+            name={viewMode === "grid" ? "list" : "grid"}
+            size={20}
+            color={COLORS.onSurface}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+      >
+        {/* Category Blocks */}
+        <View
+          style={
+            viewMode === "grid" ? styles.categoryGrid : styles.categoryList
+          }
+        >
+          {Object.entries(CUSTOMIZATION_CONFIG).map(
+            ([sectionKey, section], index) =>
+              renderCategoryBlock(
+                sectionKey,
+                section,
+                index,
+                Object.keys(CUSTOMIZATION_CONFIG).length
+              )
+          )}
+        </View>
+
+        {/* selected category settings */}
+        {selectedCategory && (
+          <View style={styles.selectedCategorySection}>
+            <View style={styles.categoryHeader}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => setSelectedCategory(null)}
+              >
+                <MaterialIcons
+                  name="arrow-back"
+                  size={24}
+                  color={COLORS.onSurface}
+                />
+              </TouchableOpacity>
+              <Text style={styles.selectedCategoryTitle}>
+                {
+                  CUSTOMIZATION_CONFIG[
+                    selectedCategory as keyof typeof CUSTOMIZATION_CONFIG
+                  ].title
+                }
+              </Text>
+            </View>
+            <View style={styles.card}>
+              {CUSTOMIZATION_CONFIG[
+                selectedCategory as keyof typeof CUSTOMIZATION_CONFIG
+              ].settings.map((setting, index) =>
+                renderSettingItem(
+                  setting,
+                  selectedCategory,
+                  index,
+                  index ===
+                    CUSTOMIZATION_CONFIG[
+                      selectedCategory as keyof typeof CUSTOMIZATION_CONFIG
+                    ].settings.length -
+                      1
+                )
+              )}
+            </View>
+          </View>
+        )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerSubtext}>The app is all yours :)</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.sm,
+  },
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.full,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontFamily: "Inter_600SemiBold",
+    ...TYPOGRAPHY.titleLarge,
+    color: COLORS.onSurface,
+  },
+  placeholder: {
+    width: 48,
+  },
+  viewModeButton: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.full,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: SPACING.md,
+    paddingBottom: 40,
+  },
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  categoryList: {
+    flexDirection: "column",
+    marginBottom: SPACING.lg,
+  },
+  categoryBlock: {
+    width: "30%",
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 120,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryBlockSelected: {
+    backgroundColor: COLORS.primaryContainer,
+    borderColor: COLORS.primary,
+  },
+  categoryBlockRow: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    alignItems: "center",
+    minHeight: 72,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryBlockRowFirst: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderTopLeftRadius: RADIUS.lg,
+    borderTopRightRadius: RADIUS.lg,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    padding: SPACING.md,
+    alignItems: "center",
+    minHeight: 72,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryBlockRowMiddle: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderRadius: 0,
+    padding: SPACING.md,
+    alignItems: "center",
+    minHeight: 72,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryBlockRowLast: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: RADIUS.lg,
+    borderBottomRightRadius: RADIUS.lg,
+    padding: SPACING.md,
+    alignItems: "center",
+    minHeight: 72,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  categoryBlockRowSelected: {
+    backgroundColor: COLORS.primaryContainer,
+    borderColor: COLORS.primary,
+  },
+  categoryIcon: {
+    marginBottom: SPACING.sm,
+  },
+  categoryIconRow: {
+    marginRight: SPACING.md,
+  },
+  categoryTitle: {
+    fontFamily: "Inter_600SemiBold",
+    ...TYPOGRAPHY.titleSmall,
+    color: COLORS.onSurface,
+    textAlign: "center",
+    marginBottom: SPACING.xs,
+  },
+  categoryTitleSelected: {
+    color: COLORS.onPrimaryContainer,
+  },
+  categoryTitleRow: {
+    fontFamily: "Inter_600SemiBold",
+    ...TYPOGRAPHY.bodyLarge,
+    color: COLORS.onSurface,
+    textAlign: "left",
+    flex: 1,
+  },
+  categoryTitleRowSelected: {
+    color: COLORS.onPrimaryContainer,
+  },
+  categoryCount: {
+    fontFamily: "Inter_400Regular",
+    ...TYPOGRAPHY.bodySmall,
+    color: COLORS.onSurfaceVariant,
+    textAlign: "center",
+  },
+  selectedCategorySection: {
+    marginTop: SPACING.lg,
+  },
+  categoryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+  },
+  selectedCategoryTitle: {
+    fontFamily: "Inter_600SemiBold",
+    ...TYPOGRAPHY.titleMedium,
+    color: COLORS.onSurface,
+    marginLeft: SPACING.md,
+  },
+  sectionTitle: {
+    fontFamily: "Inter_500Medium",
+    ...TYPOGRAPHY.titleSmall,
+    color: COLORS.primary,
+    marginBottom: SPACING.sm,
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.md,
+  },
+  card: {
+    backgroundColor: COLORS.surfaceContainerHigh,
+    borderRadius: RADIUS.xl,
+    overflow: "hidden",
+  },
+  settingItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: SPACING.md,
+    minHeight: 72,
+  },
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.primaryContainer,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: SPACING.md,
+  },
+  settingContent: {
+    flex: 1,
+  },
+  settingLabel: {
+    fontFamily: "Inter_500Medium",
+    ...TYPOGRAPHY.bodyLarge,
+    color: COLORS.onSurface,
+  },
+  settingDescription: {
+    fontFamily: "Inter_400Regular",
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.onSurfaceVariant,
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.outlineVariant,
+    marginLeft: 72,
+  },
+  footer: {
+    alignItems: "center",
+    paddingVertical: SPACING.xl,
+    marginTop: SPACING.lg,
+  },
+  footerText: {
+    fontFamily: "Inter_600SemiBold",
+    ...TYPOGRAPHY.titleMedium,
+    color: COLORS.onSurfaceVariant,
+  },
+  footerSubtext: {
+    fontFamily: "Inter_400Regular",
+    ...TYPOGRAPHY.bodySmall,
+    color: COLORS.outline,
+    marginTop: SPACING.xs,
+  },
+});
